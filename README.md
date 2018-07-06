@@ -6,7 +6,7 @@ Ubuntu development environment (2). For the first, the volume is not mounted to 
 
 to preview the image.
 
-# Option 1: Docker
+# Option 1a: Docker
 
 In the start menu type "powershell" to see the Command Line prompt.  Right click --> Run As Administrator to Open it.
 
@@ -45,12 +45,10 @@ This is a container that will hold your Github repository, and you can shell int
 
 
 
-# Option 2: Ubuntu
+# Option 1b: Ubuntu
 This option will let you edit files and move them from the host easily, but is not recommended since you can't
 use Jekyll to preview pages.
 
-
-## 1. Start Ubuntu 18.04
 
  - Go to the Start Menu
  - Type "Ubuntu" and select the orange application
@@ -58,11 +56,11 @@ use Jekyll to preview pages.
 Username: (ask vanessa)
 Password: XXXXXXXXXXX (ask Vanessa)
 
-The psssword to unlock the ssh key (if needed) is the same. This should only be needed if you restart the computer.
+The password to unlock the ssh key (if needed) is the same. This should only be needed if you restart the computer.
 
 
 
-## 2. Navigate to your working directory
+# 2. Navigate to your working directory
 I've created for you a folder in your `$HOME` called Code where we will clone github repos, including your website. 
 
 ```bash
@@ -92,7 +90,7 @@ To open a file in the editor, you would type:
 gedit project/neuromorphic.md
 ```
 
-# 2. Get comfortable with Github
+# 3. Get comfortable with Github
 Whether you are in Docker or the ubuntu windows subsystem, you need to get comfortable with Github. When you first clone a repo, you will be on the master branch. That looks like this:
 
 ``bash
@@ -154,6 +152,52 @@ sudo gedit -E projects/neuromorphic.md
 We use sudo so that you have permissions to change settings (e.g., set the theme to cobalt if you want). The -E says to pass the user environment to the command, otherwise we wouldn't detect the display, which is exported as 0:0. This is why we started Xming server previously.
 
 At this point, you can edit files as you please, and press Control+S to save.
+
+# 4b. Add files to the repository (ubuntu)
+
+This is extra work because we are using Ubuntu on Windows (normally you would just open a file browser, copy paste, etc.) but you basically need to find where Windows drives C and D are mounted on the Ubuntu instance. This location is:
+
+```bash
+# This is for ubuntu
+/mnt
+  /mnt/c  (--- C drive
+  /mnt/d  (-- D drive
+```
+
+So we can copy files from here to your repo! To do this you follow
+this general syntax:
+
+```bash
+cp <SOURCE> <DESTINATION>
+```
+
+So for example, here is how to copy some file from the user "Natacha" desktop to the assets image folder. Make sure to specify the correct subfolder when you copy (e.g., likely in projects/<project>.
+
+
+```bash
+# One file
+cp /mnt/c/Users/Natacha/Desktop/myfile.txt assets/img/projects/
+
+# Wildcard (multiple) files
+cp /mnt/c/Users/Natacha/Desktop/*.png assets/img/projects/
+
+# And then you might add it
+git add assets/img/projects/<filename>
+git add assets/img/projects/myfile.txt
+git add assets/img/projects/*.png
+```
+
+You probably want to know what the * is. It's a wildcard. You can add "wildcads" for multiple files, here are some examples:
+
+
+
+```bash
+# add all png files in the folder "projects"
+git add assets/img/projects/*.png
+
+# add all files that start with "arty"
+git add assets/img/projects/arty
+```
 
 # 4. Committing changes
 When you are ready to "commit" your changes, which is saying "I am happy with my edits and added files, and I want to record them officially in my local repository (remember it's just a bunch of text files in the .git folder) then what I usually do first is to see what I've changed. You can do:
