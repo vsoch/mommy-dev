@@ -33,12 +33,22 @@ Just for your FYI (DON'T run this command) here is how I built the container, fr
 
 ```bash
 docker build -t vanessa/mommy-dev .
+docker push vanessa/mommy-dev
 ```
 
 What we are going to do is start the container, with a named volume (that we will see and keep our data in).
+We are also going to name it "mommy-dev" so we can reference it easily later.
 
 ```bash
-docker run -it -v mommydata:/data vanessa/mommy-dev
+$ docker run -v data:/Code --name mommy-dev --publish 80:80 --publish 4000:4000 -it vanessa/mommy-dev
+
+# inside the container, see that we have git!
+root@f0c5c3dade94:/# which git
+
+# Go to /Code and clone the repo
+cd /Code
+git clone git@github.com:vsoch/nsoch.github.io.git
+cd nsoch.github.io
 ```
 
 This is a container that will hold your Github repository, and you can shell into it to get an ubuntu environment. We are using this over the windows subsystem because it isn't terribly slow.
@@ -199,7 +209,37 @@ git add assets/img/projects/*.png
 git add assets/img/projects/arty
 ```
 
-# 4. Committing changes
+# 4. Jekyll
+Jekyll is a local web server that renders the pages into the site! We can use jekyll to preview our changes (live)
+Open up a SECOND powershell and issue this command to get the ipaddress of your container:
+
+```bash
+docker inspect -f '{{.Name}} - {{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $(docker ps -aq)
+/mommy-dev - 172.17.0.2
+/goofy_ptolemy -
+```
+
+This shows us that the container's internal port (127.0.0.1 is localhost) will be mapped to 172.17.0.2 on our computer!
+Then in your container, start the server:
+
+```bash
+o# bundle exec jekyll serve
+Configuration file: /Code/nsoch.github.io/_config.yml
+            Source: /Code/nsoch.github.io
+       Destination: /Code/nsoch.github.io/_site
+ Incremental build: disabled. Enable with --incremental
+      Generating...
+Error reading file /Code/nsoch.github.io/projects/dna.md: (<unknown>): did not find expected key while parsing a block mapping at line 2 column 1
+                    done in 1.081 seconds.
+ Auto-regeneration: enabled for '/Code/nsoch.github.io'
+    Server address: http://127.0.0.1:4000/nsoch.github.io/
+  Server running... press ctrl-c to stop.
+```
+
+Notice the error message? That's the bug in the dna.md that still exists  (that you need to fix). The server
+should be rendered at [http://172.17.0.2:4000/nsoch.github.io/] in your browser.
+
+# 5. Committing changes
 When you are ready to "commit" your changes, which is saying "I am happy with my edits and added files, and I want to record them officially in my local repository (remember it's just a bunch of text files in the .git folder) then what I usually do first is to see what I've changed. You can do:
 
 ```bash
